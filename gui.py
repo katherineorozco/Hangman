@@ -118,6 +118,9 @@ class Ui_Hangman(object):
         font.setPointSize(75)
         self.man_rightarm.setFont(font)
         self.man_rightarm.setObjectName("man_rightarm")
+        self.button_new = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.button_new.setGeometry(QtCore.QRect(280, 10, 113, 32))
+        self.button_new.setObjectName("button_new")
         Hangman.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=Hangman)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 480, 24))
@@ -143,6 +146,7 @@ class Ui_Hangman(object):
         self.man_leftleg.setText(_translate("Hangman", "/"))
         self.man_leftarm.setText(_translate("Hangman", "-"))
         self.man_rightarm.setText(_translate("Hangman", "-"))
+        self.button_new.setText(_translate("Hangman", "New Word"))
 
 
 if __name__ == "__main__":
