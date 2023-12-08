@@ -26,7 +26,7 @@ class Logic(QMainWindow, Ui_Hangman):
         self.man_rightleg.setVisible(False)
 
         # Initialize the display with underscores
-        self.label_word.setText("_" * len(self.word_to_guess))
+        self.label_word.setText(" _ " * len(self.word_to_guess))
 
         # Connect buttons to functions
         self.button_submit.clicked.connect(lambda: self.submit())
@@ -37,9 +37,9 @@ class Logic(QMainWindow, Ui_Hangman):
         word_display = ''
         for letter in self.word_to_guess:
             if letter.lower() in self.correct_letters or not letter.isalpha():
-                word_display += letter
+                word_display += f' {letter} '
             else:
-                word_display += "_"
+                word_display += " _ "
         self.label_word.setText(word_display)
 
     def read_data(self) -> None:
@@ -54,6 +54,7 @@ class Logic(QMainWindow, Ui_Hangman):
     def check_word(self) -> None:
         """Check if the guessed letter is correct and update the game."""
         if self.max_attempts >= 1:
+            print(self.word_to_guess)
             if self.guessed_letter.isalpha():
                 word_display: str = ''
 
@@ -63,9 +64,9 @@ class Logic(QMainWindow, Ui_Hangman):
 
                 for letter in self.word_to_guess:
                     if letter.lower() in self.correct_letters or not letter.isalpha():
-                        word_display += letter
+                        word_display += f' {letter} '
                     else:
-                        word_display += "_"
+                        word_display += " _ "
 
                 self.label_word.setText(word_display)
 
@@ -118,6 +119,12 @@ class Logic(QMainWindow, Ui_Hangman):
         self.input_letter.clear()
         self.label_result.clear()
         self.label_word.clear()
+        self.man_rightleg.setVisible(False)
+        self.man_leftleg.setVisible(False)
+        self.man_leftarm.setVisible(False)
+        self.man_rightarm.setVisible(False)
+        self.man_head.setVisible(False)
+        self.man_body.setVisible(False)
         self.button_submit.setVisible(True)
         self.correct_letters = []
         self.word_to_guess = random.choice(self.word_list).lower()
