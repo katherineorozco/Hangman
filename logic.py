@@ -7,6 +7,15 @@ class Logic(QMainWindow, Ui_Hangman):
     def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
+        self.correct_letters = []
+        self.word_list = []
+        self.max_attempts = 10
+        self.word_to_guess = ''
+        self.guessed_letter = self.input_letter.text().strip()
+        self.read_data()
+        self.word_to_guess = random.choice(self.word_list).lower()
+
+
         self.man_body.setVisible(False)
         self.man_head.setVisible(False)
         self.man_leftarm.setVisible(False)
@@ -16,11 +25,7 @@ class Logic(QMainWindow, Ui_Hangman):
         self.button_submit.clicked.connect(lambda: self.submit())
         self.button_new.clicked.connect(lambda: self.new_word())
 
-        self.max_attempts = 10
-        self.read_data()
-        self.new_word()
-        self.word_to_guess = ''
-        self.guessed_letter = self.input_letter.text().strip()
+
 
     def read_data(self):
         filename = 'words.txt'
@@ -30,36 +35,46 @@ class Logic(QMainWindow, Ui_Hangman):
         except FileNotFoundError:
             print(f"Error: {filename} not found.")
 
+#TODO: algorithm doesn't fit in word label, fix the max_attempts shown in incorrect label
+
     def check_word(self):
         print(f"Word to guess: {self.word_to_guess}")
         print(f"Guessed letter: {self.guessed_letter}")
+
         if self.max_attempts >= 1:
             if self.guessed_letter.isalpha():
                 word_display = ''
-                letter_found = False
+
+                if self.guessed_letter.lower() not in self.correct_letters:
+                    self.correct_letters.append(self.guessed_letter.lower())
+
                 for letter in self.word_to_guess:
-                    if self.guessed_letter == letter:
+                    if letter.lower() in self.correct_letters or not letter.isalpha():
                         word_display += letter
-                        letter_found = True
+                        self.label_result.setText("Good guess!")
+
                     else:
                         word_display += "_"
 
-                    self.label_word.setText(word_display)
+                self.label_word.setText(word_display)
 
-                    if not letter_found:
-                        self.max_attempts -= 1
-                        self.show_body()
-                        self.label_result.setText(f"Incorrect! {self.max_attempts} attempts remaining.")
+                if set(self.word_to_guess) == set(self.correct_letters):
+                    self.label_result.setText("You guessed the word! Click New Word to play again.")
+                    self.button_submit.setVisible(False)
+                    return
+
+                elif self.guessed_letter.lower() not in set(self.word_to_guess.lower()):
+                    self.max_attempts -= 1
+                    self.show_body()
+                    self.label_result.setText(f"Incorrect! {self.max_attempts} attempts remaining.")
 
             else:
                 self.max_attempts -= 1
                 self.show_body()
-                self.label_result.setText(f"Incorrect! {self.max_attempts} attempts remaining.")
+                self.label_result.setText(f"Type in a letter.")
 
         else:
-            self.new_word()
             self.label_result.setText(f"Wrong! It was {self.word_to_guess}. :( \nClick New Word!")
-            return None
 
     def show_body(self):
         if self.max_attempts == 6:
@@ -76,13 +91,16 @@ class Logic(QMainWindow, Ui_Hangman):
             self.man_rightleg.setVisible(True)
 
     def submit(self):
-        self.word_to_guess = random.choice(self.word_list).lower()
         self.guessed_letter = self.input_letter.text().strip()
-        self.check_word()
         self.input_letter.clear()
+        self.check_word()
+
 
     def new_word(self):
-        self.max_attempts = 11
+        self.max_attempts = 10
         self.input_letter.clear()
         self.label_result.clear()
+        self.label_word.clear()
+        self.button_submit.setVisible(True)
         self.word_to_guess = random.choice(self.word_list).lower()
+
