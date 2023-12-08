@@ -2,47 +2,47 @@ from PyQt6.QtWidgets import *
 from gui import *
 import random
 
-
 class Logic(QMainWindow, Ui_Hangman):
+    """Class for handling the logic of the Hangman game."""
+
     def __init__(self) -> None:
+        """Initialize the Hangman game logic."""
         super().__init__()
         self.setupUi(self)
-        self.correct_letters = []
-        self.word_list = []
-        self.max_attempts = 9
-        self.word_to_guess = ''
-        self.guessed_letter = self.input_letter.text().strip()
+        self.correct_letters: list[str] = []
+        self.word_list: list[str] = []
+        self.max_attempts: int = 9
+        self.word_to_guess: str = ''
+        self.guessed_letter: str = self.input_letter.text().strip()
         self.read_data()
         self.word_to_guess = random.choice(self.word_list).lower()
 
-
+        # Hide body parts at the beginning
         self.man_body.setVisible(False)
         self.man_head.setVisible(False)
         self.man_leftarm.setVisible(False)
         self.man_rightarm.setVisible(False)
         self.man_leftleg.setVisible(False)
         self.man_rightleg.setVisible(False)
+
+        # Connect buttons to functions
         self.button_submit.clicked.connect(lambda: self.submit())
         self.button_new.clicked.connect(lambda: self.new_word())
 
-
-
-    def read_data(self):
-        filename = 'words.txt'
+    def read_data(self) -> None:
+        """Read the word list from a file."""
+        filename: str = 'words.txt'
         try:
             with open(filename, 'r') as file:
                 self.word_list = file.read().splitlines()
         except FileNotFoundError:
             print(f"Error: {filename} not found.")
 
-
-    def check_word(self):
-        print(f"Word to guess: {self.word_to_guess}")
-        print(f"Guessed letter: {self.guessed_letter}")
-
+    def check_word(self) -> None:
+        """Check if the guessed letter is correct and update the game."""
         if self.max_attempts >= 1:
             if self.guessed_letter.isalpha():
-                word_display = ''
+                word_display: str = ''
 
                 if self.guessed_letter.lower() not in self.correct_letters:
                     if self.guessed_letter in self.word_to_guess:
@@ -52,7 +52,6 @@ class Logic(QMainWindow, Ui_Hangman):
                     if letter.lower() in self.correct_letters or not letter.isalpha():
                         word_display += letter
                         self.label_result.setText("Good guess!")
-
                     else:
                         word_display += "_"
 
@@ -68,17 +67,15 @@ class Logic(QMainWindow, Ui_Hangman):
                     self.label_result.setText(f"Incorrect! {self.max_attempts} attempts remaining.")
                     self.max_attempts -= 1
 
-
-
             else:
                 self.show_body()
                 self.label_result.setText(f"Type in a letter.")
 
-
         else:
             self.label_result.setText(f"Wrong! It was {self.word_to_guess}. :( \nClick New Word!")
 
-    def show_body(self):
+    def show_body(self) -> None:
+        """Show hangman's body parts based on the number of incorrect attempts."""
         if self.max_attempts == 6:
             self.man_head.setVisible(True)
         if self.max_attempts == 5:
@@ -92,13 +89,14 @@ class Logic(QMainWindow, Ui_Hangman):
         if self.max_attempts == 1:
             self.man_rightleg.setVisible(True)
 
-    def submit(self):
+    def submit(self) -> None:
+        """Gets the guessed letter and checks it."""
         self.guessed_letter = self.input_letter.text().strip()
         self.input_letter.clear()
         self.check_word()
 
-
-    def new_word(self):
+    def new_word(self) -> None:
+        """Start a new round with a new word."""
         self.max_attempts = 9
         self.input_letter.clear()
         self.label_result.clear()
@@ -106,4 +104,3 @@ class Logic(QMainWindow, Ui_Hangman):
         self.button_submit.setVisible(True)
         self.correct_letters = []
         self.word_to_guess = random.choice(self.word_list).lower()
-
