@@ -9,7 +9,7 @@ class Logic(QMainWindow, Ui_Hangman):
         self.setupUi(self)
         self.correct_letters = []
         self.word_list = []
-        self.max_attempts = 10
+        self.max_attempts = 9
         self.word_to_guess = ''
         self.guessed_letter = self.input_letter.text().strip()
         self.read_data()
@@ -35,7 +35,6 @@ class Logic(QMainWindow, Ui_Hangman):
         except FileNotFoundError:
             print(f"Error: {filename} not found.")
 
-#TODO: algorithm doesn't fit in word label, fix the max_attempts shown in incorrect label
 
     def check_word(self):
         print(f"Word to guess: {self.word_to_guess}")
@@ -46,7 +45,8 @@ class Logic(QMainWindow, Ui_Hangman):
                 word_display = ''
 
                 if self.guessed_letter.lower() not in self.correct_letters:
-                    self.correct_letters.append(self.guessed_letter.lower())
+                    if self.guessed_letter in self.word_to_guess:
+                        self.correct_letters.append(self.guessed_letter.lower())
 
                 for letter in self.word_to_guess:
                     if letter.lower() in self.correct_letters or not letter.isalpha():
@@ -58,20 +58,22 @@ class Logic(QMainWindow, Ui_Hangman):
 
                 self.label_word.setText(word_display)
 
-                if set(self.word_to_guess) == set(self.correct_letters):
+                if sorted(set(self.word_to_guess)) == sorted(set(self.correct_letters)):
                     self.label_result.setText("You guessed the word! Click New Word to play again.")
                     self.button_submit.setVisible(False)
                     return
 
                 elif self.guessed_letter.lower() not in set(self.word_to_guess.lower()):
-                    self.max_attempts -= 1
                     self.show_body()
                     self.label_result.setText(f"Incorrect! {self.max_attempts} attempts remaining.")
+                    self.max_attempts -= 1
+
+
 
             else:
-                self.max_attempts -= 1
                 self.show_body()
                 self.label_result.setText(f"Type in a letter.")
+
 
         else:
             self.label_result.setText(f"Wrong! It was {self.word_to_guess}. :( \nClick New Word!")
@@ -97,10 +99,11 @@ class Logic(QMainWindow, Ui_Hangman):
 
 
     def new_word(self):
-        self.max_attempts = 10
+        self.max_attempts = 9
         self.input_letter.clear()
         self.label_result.clear()
         self.label_word.clear()
         self.button_submit.setVisible(True)
+        self.correct_letters = []
         self.word_to_guess = random.choice(self.word_list).lower()
 
