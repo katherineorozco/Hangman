@@ -25,9 +25,22 @@ class Logic(QMainWindow, Ui_Hangman):
         self.man_leftleg.setVisible(False)
         self.man_rightleg.setVisible(False)
 
+        # Initialize the display with underscores
+        self.label_word.setText("_" * len(self.word_to_guess))
+
         # Connect buttons to functions
         self.button_submit.clicked.connect(lambda: self.submit())
         self.button_new.clicked.connect(lambda: self.new_word())
+
+    def display_word(self) -> None:
+        """Display the word with underscores for unguessed letters."""
+        word_display = ''
+        for letter in self.word_to_guess:
+            if letter.lower() in self.correct_letters or not letter.isalpha():
+                word_display += letter
+            else:
+                word_display += "_"
+        self.label_word.setText(word_display)
 
     def read_data(self) -> None:
         """Read the word list from a file."""
@@ -51,7 +64,6 @@ class Logic(QMainWindow, Ui_Hangman):
                 for letter in self.word_to_guess:
                     if letter.lower() in self.correct_letters or not letter.isalpha():
                         word_display += letter
-                        self.label_result.setText("Good guess!")
                     else:
                         word_display += "_"
 
@@ -67,6 +79,9 @@ class Logic(QMainWindow, Ui_Hangman):
                     self.label_result.setText(f"Incorrect! {self.max_attempts} attempts remaining.")
                     self.max_attempts -= 1
 
+                else:
+                    self.label_result.setText("Good guess!")
+
             else:
                 self.show_body()
                 self.label_result.setText(f"Type in a letter.")
@@ -74,6 +89,7 @@ class Logic(QMainWindow, Ui_Hangman):
         else:
             self.label_result.setText(f"Wrong! It was {self.word_to_guess}. :( \nClick New Word!")
             self.button_submit.setVisible(False)
+
 
     def show_body(self) -> None:
         """Show hangman's body parts based on the number of incorrect attempts."""
@@ -105,3 +121,4 @@ class Logic(QMainWindow, Ui_Hangman):
         self.button_submit.setVisible(True)
         self.correct_letters = []
         self.word_to_guess = random.choice(self.word_list).lower()
+        self.display_word()
