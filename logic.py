@@ -73,6 +73,7 @@ class Logic(QMainWindow, Ui_Hangman):
 
         else:
             self.label_result.setText(f"Wrong! It was {self.word_to_guess}. :( \nClick New Word!")
+            self.button_submit.setVisible(False)
 
     def show_body(self) -> None:
         """Show hangman's body parts based on the number of incorrect attempts."""
